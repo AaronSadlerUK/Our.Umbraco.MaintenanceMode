@@ -1,11 +1,8 @@
-﻿<div ng-controller="maintenanceModeDashboardController as vm">
+<div ng-controller="maintenanceModeDashboardController as vm">
 
     <umb-box>
-        <umb-box-header title="Maintenance Mode"
-                        description="Setup a placeholder page to respond to all requests while you
-                    sort things out or make sure everything is OK before going live
-                    with your site."></umb-box-header>
         <umb-box-content class="maintenanceMode-dashboard">
+
             <div ng-hide="vm.loaded">
                 <umb-load-indicator></umb-load-indicator>
             </div>
@@ -14,18 +11,35 @@
 
                 <div ng-if="vm.status.IsInMaintenanceMode"
                      class="alert alert-danger maintenanceMode-alert">
-                    The site is currently in maintenance mode<br /> Visitors will
-                    be seeing the in maintenance page for all pages.
+                    <i class="icon icon-block"></i>
+                    <div>
+                        <localize key="maintain_onMsg"></localize>
+                    </div>
                 </div>
-                <div ng-if="!vm.status.UsingWebConfig">
+
+                <div ng-if="vm.status.IsContentFrozen"
+                     class="alert alert-info maintenanceMode-alert">
+                    <i class="icon icon-snow"></i>
+                    <div>
+                        <localize key="maintain_frozenMsg"></localize>
+                    </div>
+                </div>
+
+                <div class="maintenanceMode-header">
+                    <i class="icon icon-wrench"></i>
+                    <h3><localize key="maintain_title"></localize></h3>
+                </div>
+
+                <localize key="maintain_intro"></localize>
+
+                <div ng-if="!vm.status.UsingWebConfig" class="flex justify-center">
                     <div class="maintenanceMode-button">
                         <div ng-show="vm.status.IsInMaintenanceMode">
                             <umb-button action="vm.toggleMode()"
                                         type="button"
                                         button-style="success btn-large"
                                         state="vm.buttonState"
-                                        shortcut="ctrl+c"
-                                        label="Turn off maintenance mode"
+                                        label-key="maintain_btnModeOff"
                                         disabled="vm.buttonState === 'busy'">
                             </umb-button>
                         </div>
@@ -34,20 +48,40 @@
                                         type="button"
                                         button-style="danger btn-large"
                                         state="vm.buttonState"
-                                        shortcut="ctrl+c"
-                                        label="Turn on maintenance mode"
+                                        label-key="maintain_btnModeOn"
                                         disabled="vm.buttonState === 'busy'">
                             </umb-button>
                         </div>
                     </div>
+
+                    <div class="maintenanceMode-button">
+                        <div ng-show="vm.status.IsContentFrozen">
+                            <umb-button action="vm.toggleFreeze()"
+                                        type="button"
+                                        button-style="action btn-large"
+                                        state="vm.buttonState"
+                                        label-key="maintain_btnFreezeOff"
+                                        disabled="vm.buttonState === 'busy'">
+                            </umb-button>
+                        </div>
+                        <div ng-show="!vm.status.IsContentFrozen">
+                            <umb-button action="vm.toggleFreeze()"
+                                        type="button"
+                                        button-style="danger btn-large"
+                                        state="vm.buttonState"
+                                        label-key="maintain_btnFreezeOn"
+                                        disabled="vm.buttonState === 'busy'">
+                            </umb-button>
+                        </div>
+                    </div>
+
+
                 </div>
                 <div ng-if="vm.status.UsingWebConfig">
 
                     <div class="maintenanceMode-warning">
-                        Maintance Mode set in the web.config, so you cannot turn it on
-                        or off via the dashboard.
+                        <localize key="maintain_webConfigWarn"></localize>
                     </div>
-
                     <pre>
                     <code>
 &lt;appSettings&gt;
@@ -60,53 +94,26 @@
                 <div class="maintenanceMode-options">
 
                     <div class="maintenanceMode-backoffice">
-                        <input type="checkbox"
-                               ng-checked="vm.status.Settings.AllowBackOfficeUsersThrough"
-                               ng-model="vm.status.Settings.AllowBackOfficeUsersThrough"
-                               id="maintenanceModeBackofficeUser"
-                               no-Dirty-Check />
-                        <label for="maintenanceModeBackofficeUser">
-                            Let backoffice users still view the site
-                        </label>
+
+                        <div class="flex justify-center">
+                            <umb-toggle checked="vm.status.Settings.AllowBackOfficeUsersThrough"
+                                        on-click="vm.status.Settings.AllowBackOfficeUsersThrough = !vm.status.Settings.AllowBackOfficeUsersThrough"
+                                        show-labels="true"
+                                        label-on="Allow backoffice users to view site"
+                                        label-off="Allow backoffice users to view site"
+                                        label-position="right">
+                            </umb-toggle>
+                        </div>
                     </div>
 
                     <div class="maintenanceMode-options-advanced">
-                        <div class="accordion-heading">
-                            <!--<a class="accordion-toggle"
-                                   data-toggle="collapse"
-                                   ng-click="vm.triggerAccordian()"
-                                   href="#maintanceModeAdvanced">
-                                Advanced Options
-                            </a>-->
-                            <umb-button action="vm.triggerAccordian()"
+                            <umb-button action="vm.openAdvanced()"
                                         type="button"
-                                        button-style="action"
+                                        button-style="link"
                                         state="vm.buttonState"
-                                        label="Advanced Options"
+                                        label-key="maintain_btnAdvanced"
                                         disabled="vm.buttonState === 'busy'">
                             </umb-button>
-                        </div>
-                        <div class="accordion-body collapse"
-                             id="maintanceModeAdvanced">
-                            <div class="accordion-inner">
-                                <div>
-                                    Maintenance Template Name :
-                                    <select ng-model="vm.status.Settings.TemplateName"
-                                            ng-options="t for t in vm.templates" no-Dirty-Check></select>
-                                </div>
-                                <div class="maintenanceMode-warning">
-                                    The template will be passed the model of the page,
-                                    so if it interacts with the content it must work
-                                    for all content types
-                                </div>
-
-                                <div class="maintenanceMode-options-advanced-button">
-                                    <button class="btn btn-info"
-                                            ng-click="vm.saveSettings()">
-                                        Update
-                                    </button>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
