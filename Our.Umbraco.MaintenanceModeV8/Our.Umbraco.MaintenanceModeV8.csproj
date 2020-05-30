@@ -238,6 +238,7 @@
   <ItemGroup>
     <Compile Include="Controllers\MaintenanceModeBackOfficeApiController.cs" />
     <Compile Include="Controllers\MaintenanceModeMvcController.cs" />
+    <Compile Include="HttpModules\MaintenanceModeHttpModule.cs" />
     <Compile Include="MaintenanceModeComposer.cs" />
     <Compile Include="Models\MaintenanceModeStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
